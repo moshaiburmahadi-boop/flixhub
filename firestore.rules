@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'moshaibur.mahadi@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidMovie(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+             data.posterUrl is string && data.posterUrl.size() > 0 && data.posterUrl.size() <= 1000 &&
+             data.category is string && data.category.size() > 0 && data.category.size() <= 100 &&
+             data.personalRating is number && data.personalRating >= 0 && data.personalRating <= 10 &&
+             data.imdbRating is number && data.imdbRating >= 0 && data.imdbRating <= 10 &&
+             data.watchUrl is string && data.watchUrl.size() > 0 && data.watchUrl.size() <= 1000;
+    }
+
+    function isValidCategory(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             (!('subCategories' in data) || (data.subCategories is list && data.subCategories.size() <= 50));
+    }
+
+    // Public read for FlixDairy vault showcase; admin-only writes
+    match /movies/{movieId} {
+      allow read: if true;
+      allow create: if isValidId(movieId) && isAdmin() && isValidMovie(incoming());
+      allow update: if isValidId(movieId) && isAdmin() && isValidMovie(incoming());
+      allow delete: if isValidId(movieId) && isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create: if isValidId(categoryId) && isAdmin() && isValidCategory(incoming());
+      allow update: if isValidId(categoryId) && isAdmin() && isValidCategory(incoming());
+      allow delete: if isValidId(categoryId) && isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+  }
+}

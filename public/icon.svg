@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#141414"/>
+  <defs>
+    <linearGradient id="gradRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E50914" />
+      <stop offset="100%" stop-color="#B20710" />
+    </linearGradient>
+    <linearGradient id="gradDarkRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#800c12" />
+      <stop offset="100%" stop-color="#450005" />
+    </linearGradient>
+  </defs>
+  <!-- Film reel / frame accent -->
+  <rect x="76" y="86" width="360" height="340" rx="36" fill="#1F1F1F" stroke="#333" stroke-width="4"/>
+  <!-- Stylized FlixDairy 'F' / Movie ribbon -->
+  <path d="M160 140 H330 C345 140 355 152 355 166 V196 C355 210 345 222 330 222 H240 V260 H310 C325 260 335 272 335 286 V312 C335 326 325 338 310 338 H240 V372 C240 382 232 390 222 390 H178 C168 390 160 382 160 372 V140 Z" fill="url(#gradRed)" />
+  <!-- Shadow fold accent -->
+  <path d="M240 140 L160 390 L240 340 Z" fill="url(#gradDarkRed)" opacity="0.45" />
+  <!-- Star accent for ratings -->
+  <polygon points="360,330 368,348 388,349 372,362 377,381 360,370 343,381 348,362 332,349 352,348" fill="#F5C518"/>
+</svg>

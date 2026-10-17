@@ -1,0 +1,8 @@
+{
+  "name": "FlixDairy",
+  "description": "Personal Netflix-style movie vault to curate watched movies, personal reviews, IMDb ratings, custom categories, and watch links.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
