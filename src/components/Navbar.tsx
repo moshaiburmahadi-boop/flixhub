@@ -76,25 +76,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center justify-between gap-2 sm:gap-4 w-full">
             {/* Brand & Desktop Navigation */}
             <div className="flex items-center gap-4 sm:gap-8 min-w-0">
-              {/* Logo */}
+              {/* Site Logo using exact uploaded image */}
               <button
                 onClick={() => {
                   onTabChange('home');
                   onSearchChange('');
                 }}
                 className="flex items-center gap-2 group text-left cursor-pointer focus:outline-none shrink-0"
+                title="FlixDairy Home"
               >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-900/50 group-hover:scale-105 transition-transform">
-                  <Film className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-bebas text-xl sm:text-3xl tracking-wider text-blue-500 font-black leading-none">
-                    FLIXDAIRY
-                  </span>
-                  <span className="text-[8px] sm:text-[9px] tracking-widest text-slate-400 font-semibold uppercase -mt-0.5">
-                    Movie Vault
-                  </span>
-                </div>
+                <img
+                  src="/logo.svg"
+                  alt="FlixDairy"
+                  className="h-8 sm:h-10 w-auto object-contain rounded-md transition-transform duration-300 group-hover:scale-105"
+                />
               </button>
 
               {/* Desktop Navigation Links */}

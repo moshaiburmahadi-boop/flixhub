@@ -1,21 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="96" fill="#0b0f17"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
   <defs>
-    <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3B82F6" />
-      <stop offset="100%" stop-color="#1D4ED8" />
-    </linearGradient>
-    <linearGradient id="gradDarkBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E3A8A" />
-      <stop offset="100%" stop-color="#0F172A" />
-    </linearGradient>
+    <!-- Embedded clean Bebas/Impact style font fallbacks -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;display=swap');
+      .brand-text {
+        font-family: 'Bebas Neue', Impact, 'Arial Black', 'Helvetica Neue', sans-serif;
+        font-size: 215px;
+        font-weight: 900;
+        letter-spacing: 4px;
+        fill: #4D8BC9;
+        text-anchor: middle;
+      }
+    </style>
   </defs>
-  <!-- Film reel / frame accent -->
-  <rect x="76" y="86" width="360" height="340" rx="36" fill="#111827" stroke="#1E293B" stroke-width="4"/>
-  <!-- Stylized FlixDairy 'F' in Blue -->
-  <path d="M160 140 H330 C345 140 355 152 355 166 V196 C355 210 345 222 330 222 H240 V260 H310 C325 260 335 272 335 286 V312 C335 326 325 338 310 338 H240 V372 C240 382 232 390 222 390 H178 C168 390 160 382 160 372 V140 Z" fill="url(#gradBlue)" />
-  <!-- Shadow fold accent -->
-  <path d="M240 140 L160 390 L240 340 Z" fill="url(#gradDarkBlue)" opacity="0.45" />
-  <!-- Star accent for ratings -->
-  <polygon points="360,330 368,348 388,349 372,362 377,381 360,370 343,381 348,362 332,349 352,348" fill="#F5C518"/>
+
+  <!-- Deep Black Background -->
+  <rect width="1000" height="1000" fill="#000000" />
+
+  <!-- Centered Logo Group -->
+  <g id="logo-mark">
+    <!-- FLIXDAIRY in bold blue typography -->
+    <text x="500" y="540" class="brand-text">FLIXDAIRY</text>
+
+    <!-- Curved smile arrow swoosh in vibrant red -->
+    <!-- Starts under L/I, swoops down under X/D, swoops up under A/I/R with arrowhead -->
+    <path 
+      d="M 260 615
+         C 320 675, 410 725, 520 725
+         C 610 725, 680 690, 715 650
+         C 725 638, 715 630, 705 640
+         C 665 675, 595 700, 510 700
+         C 410 700, 325 655, 275 605
+         C 268 598, 255 608, 260 615 Z"
+      fill="#E52E2D"
+    />
+    <!-- Arrowhead at right of the smile -->
+    <path 
+      d="M 698 642
+         C 715 628, 735 615, 742 610
+         C 745 608, 746 612, 744 618
+         C 738 638, 722 668, 704 698
+         C 700 703, 694 698, 696 692
+         C 700 675, 703 658, 698 642 Z"
+      fill="#E52E2D"
+    />
+  </g>
 </svg>

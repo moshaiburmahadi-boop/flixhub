@@ -200,14 +200,16 @@ export default function App() {
             {movies.length > 0 ? (
               <HeroBanner movies={movies} onSelectMovie={setSelectedMovie} />
             ) : (
-              /* Clean Empty Vault Hero State */
+              /* Clean Empty Vault Hero State with Brand Logo */
               <div className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-8 text-center bg-gradient-to-b from-slate-900 via-[#0b0f17] to-[#0b0f17] border-b border-slate-800/80">
                 <div className="max-w-2xl mx-auto space-y-4">
-                  <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto shadow-2xl shadow-blue-900/50">
-                    <Film className="w-8 h-8 text-white" />
-                  </div>
-                  <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-                    FLIXDAIRY VAULT
+                  <img
+                    src="/logo.svg"
+                    alt="FlixDairy"
+                    className="w-44 sm:w-60 h-auto mx-auto rounded-2xl shadow-2xl drop-shadow-2xl"
+                  />
+                  <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+                    YOUR PERSONAL MOVIE VAULT
                   </h1>
                   <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
                     Your personal movie vault is clean and ready. Open <span className="text-blue-400 font-mono font-bold">/admin</span> in the URL to add your mother categories, log watched movies, write your reviews, and set ratings.
@@ -457,12 +459,9 @@ export default function App() {
       {/* Footer */}
       <footer className="mt-20 border-t border-slate-900 py-10 px-4 sm:px-8 text-slate-500 text-xs max-w-7xl mx-auto space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-white font-bold text-[10px]">
-              FD
-            </div>
-            <span className="font-bebas text-lg text-slate-400 tracking-wider">FLIXDAIRY</span>
-            <span className="text-slate-600">• Personal Curated Movie Vault</span>
+          <div className="flex items-center gap-3">
+            <img src="/logo.svg" alt="FlixDairy" className="h-8 w-auto rounded object-contain" />
+            <span className="text-slate-500">• Personal Curated Movie Vault</span>
           </div>
           <div>
             <span>{movies.length} movies cataloged across {categories.length} genres</span>
