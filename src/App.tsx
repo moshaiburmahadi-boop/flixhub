@@ -17,7 +17,7 @@ import { MovieGrid } from './components/MovieGrid';
 import { BottomNavigation } from './components/BottomNavigation';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { AdminPanel } from './components/AdminPanel';
-import { Film, Layers, Search } from 'lucide-react';
+import { Film, Layers } from 'lucide-react';
 
 export default function App() {
   // Navigation & Routing state
@@ -415,21 +415,6 @@ export default function App() {
         {/* VIEW 5: SEARCH RESULTS & MOBILE SEARCH */}
         {(searchQuery || currentTab === 'search') && (
           <div className="pt-20 sm:pt-28 w-full max-w-7xl mx-auto px-4 sm:px-8">
-            {/* Search Input Box on Search Page */}
-            <div className="mb-6">
-              <div className="relative flex items-center max-w-md w-full bg-slate-900 border border-slate-700 rounded-2xl px-4 py-2.5 focus-within:border-blue-500 shadow-xl">
-                <Search className="w-5 h-5 text-slate-400 shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search titles, genres, review notes..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none ml-2.5 w-full"
-                  autoFocus
-                />
-              </div>
-            </div>
-
             <MovieGrid
               movies={displayedMovies}
               title={searchQuery ? `Results for "${searchQuery}"` : 'Search Vault'}
