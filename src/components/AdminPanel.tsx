@@ -5,7 +5,6 @@ import {
   Trash2,
   Edit,
   ExternalLink,
-  Star,
   Check,
   X,
   Lock,
@@ -73,7 +72,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     imdbRating: 8.5,
     duration: '2h 15m',
     releaseYear: new Date().getFullYear(),
-    category: categories[0]?.name || 'Sci-Fi & Space',
+    category: categories[0]?.name || 'Sci-Fi',
     subCategory: '',
     description: '',
     personalReview: '',
@@ -109,7 +108,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setAuthError('');
     setAuthLoading(true);
 
-    // Normalize email if username was entered
     let targetEmail = emailInput.trim();
     if (!targetEmail.includes('@')) {
       targetEmail = `${targetEmail.toLowerCase()}@flixdairy.admin`;
@@ -120,7 +118,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         try {
           await signInWithEmailAndPassword(auth, targetEmail, passwordInput);
         } catch (err: unknown) {
-          // If master password fallback is entered or Firebase email provider is not enabled
           if (passwordInput === 'admin123' || passwordInput === 'flixdairy') {
             localStorage.setItem('flixdairy_admin_unlocked', 'true');
             setIsLocalAdminUnlocked(true);
@@ -136,7 +133,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       setIsLocalAdminUnlocked(true);
     } catch (err: unknown) {
       console.error('Auth error:', err);
-      // Master passkey fallback: if user uses admin / admin123
       if (passwordInput === 'admin123' || passwordInput === 'flixdairy' || passwordInput === 'admin') {
         localStorage.setItem('flixdairy_admin_unlocked', 'true');
         setIsLocalAdminUnlocked(true);
@@ -182,7 +178,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       imdbRating: 8.5,
       duration: '2h 15m',
       releaseYear: new Date().getFullYear(),
-      category: categories[0]?.name || 'Sci-Fi & Space',
+      category: categories[0]?.name || '',
       subCategory: '',
       description: '',
       personalReview: '',
@@ -212,7 +208,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       setIsEditingMovie(false);
     } catch (err: unknown) {
       console.error('Save error:', err);
-      showStatus('Failed to save movie. Check your database permissions.', 'error');
+      showStatus(err instanceof Error ? err.message : 'Failed to save movie.', 'error');
     } finally {
       setFormLoading(false);
     }
@@ -223,8 +219,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       try {
         await removeMovie(movie.id);
         showStatus(`Deleted "${movie.title}".`);
-      } catch (err) {
-        showStatus('Failed to delete movie.', 'error');
+      } catch (err: unknown) {
+        showStatus(err instanceof Error ? err.message : 'Failed to delete movie.', 'error');
       }
     }
   };
@@ -298,10 +294,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Seed Vault
   const handleSeedVault = async () => {
     if (!currentUser) {
-      showStatus('Please sign in with Google (moshaibur.mahadi@gmail.com) first to seed to Firebase.', 'error');
+      showStatus('Please sign in with Google or credentials to seed to Firebase.', 'error');
       return;
     }
-    if (confirm('Do you want to populate your vault with curated starter movies and categories?')) {
+    if (confirm('Do you want to populate your vault with sample movies and categories?')) {
       try {
         const res = await seedInitialVault();
         showStatus(`Seeded ${res.seededMovies} movies and ${res.seededCategories} categories!`);
@@ -338,15 +334,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // If NOT authenticated, render Admin Login screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#101010] flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-[#181818] border border-neutral-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+      <div className="min-h-screen bg-[#0b0f17] flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
           {/* Logo & Header */}
           <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-xl bg-[#E50914] flex items-center justify-center mx-auto shadow-lg shadow-red-950/60">
+            <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center mx-auto shadow-lg shadow-blue-950/60">
               <Lock className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-2xl font-black text-white tracking-tight">FlixDairy Vault Admin</h1>
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-slate-400">
               Restricted management console for your personal movie vault.
             </p>
           </div>
@@ -361,7 +357,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {/* Login Form */}
           <form onSubmit={handleEmailAuth} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
                 Admin Username or Email
               </label>
               <input
@@ -370,12 +366,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 onChange={(e) => setEmailInput(e.target.value)}
                 placeholder="admin or your-email@gmail.com"
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-900 border border-neutral-700 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
                 Admin Password
               </label>
               <input
@@ -384,17 +380,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 onChange={(e) => setPasswordInput(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-900 border border-neutral-700 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
               />
-              <p className="text-[11px] text-neutral-500 mt-1">
-                Default initial master passkey: <span className="text-neutral-400 font-mono">admin123</span>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Default initial master passkey: <span className="text-blue-400 font-mono">admin123</span>
               </p>
             </div>
 
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full py-3 rounded-xl bg-[#E50914] hover:bg-[#B20710] text-white font-bold text-sm shadow-lg shadow-red-900/40 transition active:scale-95 flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-950/60 transition active:scale-95 flex items-center justify-center gap-2"
             >
               {authLoading ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
@@ -407,8 +403,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {/* Google Sign In option */}
           <div className="relative flex items-center justify-center">
-            <div className="border-t border-neutral-800 w-full" />
-            <span className="bg-[#181818] px-3 text-[11px] text-neutral-500 font-medium uppercase tracking-wider absolute">
+            <div className="border-t border-slate-800 w-full" />
+            <span className="bg-slate-900 px-3 text-[11px] text-slate-500 font-medium uppercase tracking-wider absolute">
               or
             </span>
           </div>
@@ -416,7 +412,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             onClick={handleGoogleLogin}
             disabled={authLoading}
-            className="w-full py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs transition border border-neutral-700 flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition border border-slate-700 flex items-center justify-center gap-2"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -440,7 +436,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </button>
 
           {/* Bottom switch & return link */}
-          <div className="flex items-center justify-between text-xs text-neutral-400 pt-2 border-t border-neutral-800">
+          <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
             <button
               onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
               className="hover:text-white underline cursor-pointer"
@@ -462,12 +458,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // Authenticated Admin Dashboard
   return (
-    <div className="min-h-screen bg-[#121212] text-neutral-200">
+    <div className="min-h-screen bg-[#0b0f17] text-slate-200">
       {/* Top Admin Bar */}
-      <header className="sticky top-0 z-30 bg-[#181818] border-b border-neutral-800 px-4 sm:px-8 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-4 sm:px-8 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#E50914] flex items-center justify-center text-white font-black text-sm">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
               FD
             </div>
             <div>
@@ -477,7 +473,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   LIVE
                 </span>
               </h1>
-              <p className="text-[11px] text-neutral-400">
+              <p className="text-[11px] text-slate-400">
                 Logged in as {currentUser?.email || 'Vault Administrator'}
               </p>
             </div>
@@ -487,10 +483,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={onExitAdmin}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition"
             title="Preview public FlixDairy frontend"
           >
-            <Eye className="w-4 h-4 text-neutral-400" />
+            <Eye className="w-4 h-4 text-slate-400" />
             <span className="hidden sm:inline">View Public Vault</span>
           </button>
 
@@ -523,42 +519,42 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       <main className="max-w-7xl mx-auto px-4 sm:px-8 py-6 space-y-6">
         {/* Quick Stats Overview */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-4 rounded-xl bg-[#181818] border border-neutral-800">
-            <span className="text-xs text-neutral-400 font-medium">Total Movies</span>
+          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <span className="text-xs text-slate-400 font-medium">Total Movies</span>
             <p className="text-2xl font-black text-white mt-1">{movies.length}</p>
           </div>
-          <div className="p-4 rounded-xl bg-[#181818] border border-neutral-800">
-            <span className="text-xs text-neutral-400 font-medium">Genres / Categories</span>
+          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <span className="text-xs text-slate-400 font-medium">Genres / Categories</span>
             <p className="text-2xl font-black text-white mt-1">{categories.length}</p>
           </div>
-          <div className="p-4 rounded-xl bg-[#181818] border border-neutral-800">
-            <span className="text-xs text-neutral-400 font-medium">Avg My Rating</span>
-            <p className="text-2xl font-black text-[#E50914] mt-1">
+          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <span className="text-xs text-slate-400 font-medium">Avg My Rating</span>
+            <p className="text-2xl font-black text-blue-400 mt-1">
               {movies.length > 0
                 ? (movies.reduce((acc, m) => acc + (m.personalRating || 0), 0) / movies.length).toFixed(1)
                 : '0.0'}
-              <span className="text-xs text-neutral-400 font-normal"> / 10</span>
+              <span className="text-xs text-slate-400 font-normal"> / 10</span>
             </p>
           </div>
-          <div className="p-4 rounded-xl bg-[#181818] border border-neutral-800">
-            <span className="text-xs text-neutral-400 font-medium">Avg IMDb Rating</span>
+          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+            <span className="text-xs text-slate-400 font-medium">Avg IMDb Rating</span>
             <p className="text-2xl font-black text-amber-400 mt-1">
               {movies.length > 0
                 ? (movies.reduce((acc, m) => acc + (m.imdbRating || 0), 0) / movies.length).toFixed(1)
                 : '0.0'}
-              <span className="text-xs text-neutral-400 font-normal"> / 10</span>
+              <span className="text-xs text-slate-400 font-normal"> / 10</span>
             </p>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-b border-neutral-800 pb-2">
+        <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
           <button
             onClick={() => setActiveTab('movies')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition ${
               activeTab === 'movies'
-                ? 'bg-[#E50914] text-white shadow'
-                : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                ? 'bg-blue-600 text-white shadow shadow-blue-950/60'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             <Film className="w-4 h-4" />
@@ -569,8 +565,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             onClick={() => setActiveTab('categories')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition ${
               activeTab === 'categories'
-                ? 'bg-[#E50914] text-white shadow'
-                : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                ? 'bg-blue-600 text-white shadow shadow-blue-950/60'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -581,12 +577,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             onClick={() => setActiveTab('tools')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition ${
               activeTab === 'tools'
-                ? 'bg-[#E50914] text-white shadow'
-                : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                ? 'bg-blue-600 text-white shadow shadow-blue-950/60'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             <Sparkles className="w-4 h-4" />
-            <span>Seed & Backup Tools</span>
+            <span>Backup Tools</span>
           </button>
         </div>
 
@@ -600,12 +596,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 placeholder="Filter movies by title or category..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="px-3.5 py-2 rounded-xl bg-[#181818] border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914] w-full sm:w-72"
+                className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 w-full sm:w-72"
               />
 
               <button
                 onClick={openNewMovieForm}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#E50914] hover:bg-[#B20710] text-white font-bold text-xs sm:text-sm shadow-lg shadow-red-900/40 transition active:scale-95 shrink-0"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-950/60 transition active:scale-95 shrink-0"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add New Movie</span>
@@ -613,10 +609,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
 
             {/* Movies Table / List */}
-            <div className="bg-[#181818] border border-neutral-800 rounded-2xl overflow-hidden shadow-xl">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs sm:text-sm">
-                  <thead className="bg-neutral-900/80 text-neutral-400 uppercase text-[10px] tracking-wider border-b border-neutral-800">
+                  <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
                     <tr>
                       <th className="py-3 px-4">Poster</th>
                       <th className="py-3 px-4">Title & Year</th>
@@ -627,14 +623,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <th className="py-3 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-neutral-800/80">
+                  <tbody className="divide-y divide-slate-800/80">
                     {filteredMovies.map((movie) => (
-                      <tr key={movie.id} className="hover:bg-neutral-800/40 transition">
+                      <tr key={movie.id} className="hover:bg-slate-800/40 transition">
                         <td className="py-2.5 px-4">
                           <img
                             src={movie.posterUrl}
                             alt={movie.title}
-                            className="w-10 h-14 object-cover rounded shadow bg-neutral-900"
+                            className="w-10 h-14 object-cover rounded shadow bg-slate-950"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src =
                                 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=200&auto=format&fit=crop';
@@ -645,26 +641,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           <div className="font-bold text-white flex items-center gap-1.5">
                             <span>{movie.title}</span>
                             {movie.featured && (
-                              <span className="p-0.5 rounded bg-amber-500/20 text-amber-300" title="Featured Spotlight">
-                                <Sparkles className="w-3 h-3" />
+                              <span className="p-0.5 rounded bg-blue-500/20 text-blue-300" title="Featured Spotlight">
+                                <Sparkles className="w-3 h-3 text-blue-400" />
                               </span>
                             )}
                           </div>
-                          <div className="text-neutral-400 text-xs">
+                          <div className="text-slate-400 text-xs">
                             {movie.releaseYear} • {movie.duration}
                           </div>
                         </td>
                         <td className="py-2.5 px-4">
-                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-neutral-800 text-neutral-200">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-800 text-slate-200">
                             {movie.category}
                           </span>
                           {movie.subCategory && (
-                            <span className="ml-1.5 text-neutral-400 text-xs">/ {movie.subCategory}</span>
+                            <span className="ml-1.5 text-slate-400 text-xs">/ {movie.subCategory}</span>
                           )}
                         </td>
                         <td className="py-2.5 px-4 font-bold text-white">
-                          <span className="text-[#E50914]">{movie.personalRating}</span>
-                          <span className="text-neutral-500 text-xs">/10</span>
+                          <span className="text-blue-400">{movie.personalRating}</span>
+                          <span className="text-slate-500 text-xs">/10</span>
                         </td>
                         <td className="py-2.5 px-4 font-semibold text-amber-400">
                           {movie.imdbRating}
@@ -684,14 +680,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => openEditMovieForm(movie)}
-                              className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition"
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
                               title="Edit"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteMovie(movie)}
-                              className="p-1.5 rounded-lg bg-neutral-800 hover:bg-red-950 text-neutral-300 hover:text-red-400 transition"
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-slate-300 hover:text-red-400 transition"
                               title="Delete"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -702,8 +698,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     ))}
                     {filteredMovies.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="py-12 text-center text-neutral-500">
-                          No movies found. Click "Add New Movie" above or use the "Seed" tool.
+                        <td colSpan={7} className="py-12 text-center text-slate-500">
+                          No movies found. Click "Add New Movie" above to add your first film.
                         </td>
                       </tr>
                     )}
@@ -718,10 +714,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         {activeTab === 'categories' && (
           <div className="space-y-6">
             {/* Create Category Bar */}
-            <div className="p-4 rounded-2xl bg-[#181818] border border-neutral-800">
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800">
               <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-                <FolderPlus className="w-4 h-4 text-[#E50914]" />
-                Create New Main Category
+                <FolderPlus className="w-4 h-4 text-blue-400" />
+                Create New Mother Category
               </h3>
               <form onSubmit={handleAddCategory} className="flex gap-2">
                 <input
@@ -729,11 +725,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   placeholder="e.g. Psychological Thriller, Anime, Documentaries..."
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
-                  className="flex-1 px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                  className="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#E50914] hover:bg-[#B20710] text-white font-bold text-xs sm:text-sm transition shrink-0"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition shrink-0 shadow shadow-blue-950/60"
                 >
                   Add Category
                 </button>
@@ -745,19 +741,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               {categories.map((cat) => {
                 const count = movies.filter((m) => m.category === cat.name).length;
                 return (
-                  <div key={cat.id} className="p-5 rounded-2xl bg-[#181818] border border-neutral-800 space-y-4">
+                  <div key={cat.id} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="text-base font-bold text-white flex items-center gap-2">
                           <span>{cat.name}</span>
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
                             {count} movies
                           </span>
                         </h4>
                       </div>
                       <button
                         onClick={() => handleDeleteCategory(cat)}
-                        className="p-1.5 rounded-lg bg-neutral-900 hover:bg-red-950 text-neutral-400 hover:text-red-400 transition"
+                        className="p-1.5 rounded-lg bg-slate-950 hover:bg-red-950 text-slate-400 hover:text-red-400 transition"
                         title="Delete category"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -766,20 +762,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                     {/* Subcategories list */}
                     <div>
-                      <span className="text-xs text-neutral-400 block mb-2 font-medium">
+                      <span className="text-xs text-slate-400 block mb-2 font-medium">
                         Sub-categories under {cat.name}:
                       </span>
                       <div className="flex flex-wrap items-center gap-1.5">
                         {cat.subCategories?.map((sub) => (
                           <span
                             key={sub}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-neutral-900 text-neutral-300 border border-neutral-800"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-slate-950 text-slate-300 border border-slate-800"
                           >
-                            <Tag className="w-3 h-3 text-[#E50914]" />
+                            <Tag className="w-3 h-3 text-blue-400" />
                             <span>{sub}</span>
                             <button
                               onClick={() => handleRemoveSubCategory(cat, sub)}
-                              className="text-neutral-500 hover:text-red-400 ml-0.5"
+                              className="text-slate-500 hover:text-red-400 ml-0.5"
                               title="Remove subcategory"
                             >
                               <X className="w-3 h-3" />
@@ -787,13 +783,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           </span>
                         ))}
                         {(!cat.subCategories || cat.subCategories.length === 0) && (
-                          <span className="text-xs text-neutral-500 italic">No sub-categories added yet.</span>
+                          <span className="text-xs text-slate-500 italic">No sub-categories added yet.</span>
                         )}
                       </div>
                     </div>
 
                     {/* Add Subcategory input */}
-                    <div className="flex gap-2 pt-2 border-t border-neutral-800/80">
+                    <div className="flex gap-2 pt-2 border-t border-slate-800/80">
                       <input
                         type="text"
                         placeholder="Add subcategory tag (e.g. Cyberpunk)..."
@@ -807,11 +803,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             handleAddSubCategory(cat);
                           }
                         }}
-                        className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                        className="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                       />
                       <button
                         onClick={() => handleAddSubCategory(cat)}
-                        className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs transition shrink-0"
+                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition shrink-0"
                       >
                         Add Tag
                       </button>
@@ -819,6 +815,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </div>
                 );
               })}
+              {categories.length === 0 && (
+                <div className="col-span-full py-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-2xl">
+                  No mother categories created yet. Type a name above and click "Add Category".
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -826,41 +827,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         {/* TAB 3: TOOLS & BACKUP */}
         {activeTab === 'tools' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-2xl bg-[#181818] border border-neutral-800 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">Seed Starter Collection</h3>
-                  <p className="text-xs text-neutral-400">
-                    Populate your vault with 8 hand-curated masterpiece movies and categories if currently empty.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={handleSeedVault}
-                className="w-full py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition border border-neutral-700"
-              >
-                Seed Initial Movies & Genres
-              </button>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#181818] border border-neutral-800 space-y-4">
+            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
                   <Download className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">Export Vault Backup</h3>
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-xs text-slate-400">
                     Download a full JSON backup of all your movies, ratings, reviews, and categories.
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleExportJSON}
-                className="w-full py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition border border-neutral-700"
+                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition border border-slate-700"
               >
                 Download JSON Backup
               </button>
@@ -872,15 +853,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* Movie Form Modal (Create or Edit) */}
       {isEditingMovie && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-2xl bg-[#181818] border border-neutral-800 rounded-2xl shadow-2xl p-6 sm:p-8 my-auto max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-800 mb-6">
+          <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 my-auto max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Film className="w-5 h-5 text-[#E50914]" />
+                <Film className="w-5 h-5 text-blue-500" />
                 <span>{movieForm.id ? 'Edit Movie Details' : 'Add Movie to Vault'}</span>
               </h2>
               <button
                 onClick={() => setIsEditingMovie(false)}
-                className="p-1 rounded-full text-neutral-400 hover:text-white"
+                className="p-1 rounded-full text-slate-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -890,7 +871,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               {/* Title & Release Year */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
                     Movie Title *
                   </label>
                   <input
@@ -899,11 +880,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="e.g. Interstellar"
                     value={movieForm.title || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, title: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
                     Release Year
                   </label>
                   <input
@@ -912,7 +893,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     max="2035"
                     value={movieForm.releaseYear || 2024}
                     onChange={(e) => setMovieForm({ ...movieForm, releaseYear: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -920,7 +901,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               {/* Poster URL & Backdrop URL */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
                     Poster Image Link (URL) *
                   </label>
                   <input
@@ -929,11 +910,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="https://.../poster.jpg"
                     value={movieForm.posterUrl || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, posterUrl: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
                     Backdrop / Banner URL (optional)
                   </label>
                   <input
@@ -941,14 +922,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="https://.../landscape.jpg"
                     value={movieForm.backdropUrl || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, backdropUrl: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               {/* Image Preview */}
               {movieForm.posterUrl && (
-                <div className="flex items-center gap-3 p-2 rounded-xl bg-neutral-900 border border-neutral-800">
+                <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-950 border border-slate-800">
                   <img
                     src={movieForm.posterUrl}
                     alt="Preview"
@@ -958,9 +939,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=200&auto=format&fit=crop';
                     }}
                   />
-                  <div className="text-xs text-neutral-400">
-                    <span className="font-semibold text-neutral-200">Poster Preview:</span>
-                    <p className="truncate max-w-sm text-neutral-500">{movieForm.posterUrl}</p>
+                  <div className="text-xs text-slate-400">
+                    <span className="font-semibold text-slate-200">Poster Preview:</span>
+                    <p className="truncate max-w-sm text-slate-500">{movieForm.posterUrl}</p>
                   </div>
                 </div>
               )}
@@ -968,9 +949,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               {/* Ratings and Duration */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1 flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
                     <span>Personal Rating (0 - 10) *</span>
-                    <span className="text-[#E50914] font-bold">{movieForm.personalRating} / 10</span>
+                    <span className="text-blue-400 font-bold">{movieForm.personalRating} / 10</span>
                   </label>
                   <input
                     type="number"
@@ -980,12 +961,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     required
                     value={movieForm.personalRating ?? 9.0}
                     onChange={(e) => setMovieForm({ ...movieForm, personalRating: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1 flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
                     <span>IMDb Rating (0 - 10) *</span>
                     <span className="text-amber-400 font-bold">{movieForm.imdbRating} / 10</span>
                   </label>
@@ -997,12 +978,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     required
                     value={movieForm.imdbRating ?? 8.5}
                     onChange={(e) => setMovieForm({ ...movieForm, imdbRating: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
                     Duration (e.g. 2h 49m)
                   </label>
                   <input
@@ -1011,7 +992,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="2h 28m"
                     value={movieForm.duration || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, duration: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -1019,32 +1000,44 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               {/* Category & Sub-Category */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                    Main Category / Genre *
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Mother Category / Genre *
                   </label>
-                  <select
-                    value={movieForm.category || ''}
-                    onChange={(e) => {
-                      const catName = e.target.value;
-                      const matched = categories.find((c) => c.name === catName);
-                      setMovieForm({
-                        ...movieForm,
-                        category: catName,
-                        subCategory: matched?.subCategories?.[0] || '',
-                      });
-                    }}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white focus:outline-none focus:border-[#E50914] cursor-pointer"
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.name}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
+                  {categories.length > 0 ? (
+                    <select
+                      value={movieForm.category || ''}
+                      onChange={(e) => {
+                        const catName = e.target.value;
+                        const matched = categories.find((c) => c.name === catName);
+                        setMovieForm({
+                          ...movieForm,
+                          category: catName,
+                          subCategory: matched?.subCategories?.[0] || '',
+                        });
+                      }}
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
+                      <option value="">Select a category</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Action, Sci-Fi"
+                      value={movieForm.category || ''}
+                      onChange={(e) => setMovieForm({ ...movieForm, category: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    />
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
                     Sub-Category (e.g. Cyberpunk, Nolan)
                   </label>
                   <input
@@ -1052,14 +1045,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="Sub-category or tag"
                     value={movieForm.subCategory || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, subCategory: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               {/* External Watch Link */}
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
                   External Watch / Stream Link (URL) *
                 </label>
                 <div className="relative flex items-center">
@@ -1069,7 +1062,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="https://netflix.com/title/... or https://imdb.com/..."
                     value={movieForm.watchUrl || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, watchUrl: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                   {movieForm.watchUrl && (
                     <a
@@ -1087,7 +1080,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
               {/* Synopsis */}
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
                   Synopsis / Story Description
                 </label>
                 <textarea
@@ -1095,13 +1088,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   placeholder="Plot summary of the movie..."
                   value={movieForm.description || ''}
                   onChange={(e) => setMovieForm({ ...movieForm, description: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               {/* Personal Thoughts / Review (amar motamot) */}
               <div>
-                <label className="block text-xs font-semibold text-[#E50914] mb-1">
+                <label className="block text-xs font-semibold text-blue-400 mb-1">
                   My Personal Thoughts & Review Notes (Amar Motamot) *
                 </label>
                 <textarea
@@ -1109,46 +1102,46 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   placeholder="Write your honest opinion, best scenes, emotional impact, why you love it..."
                   value={movieForm.personalReview || ''}
                   onChange={(e) => setMovieForm({ ...movieForm, personalReview: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#E50914]"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               {/* Featured & Date Watched */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-neutral-800">
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-neutral-300">
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-800">
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-300">
                   <input
                     type="checkbox"
                     checked={!!movieForm.featured}
                     onChange={(e) => setMovieForm({ ...movieForm, featured: e.target.checked })}
-                    className="w-4 h-4 rounded text-[#E50914] accent-[#E50914] focus:ring-0"
+                    className="w-4 h-4 rounded text-blue-600 accent-blue-600 focus:ring-0"
                   />
                   <span>Feature in Hero Spotlight Banner</span>
                 </label>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-neutral-400">Date Watched:</span>
+                  <span className="text-xs text-slate-400">Date Watched:</span>
                   <input
                     type="date"
                     value={movieForm.dateWatched || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, dateWatched: e.target.value })}
-                    className="px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-white focus:outline-none"
+                    className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsEditingMovie(false)}
-                  className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold text-xs sm:text-sm transition"
+                  className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs sm:text-sm transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="px-6 py-2.5 rounded-xl bg-[#E50914] hover:bg-[#B20710] text-white font-bold text-xs sm:text-sm shadow-lg shadow-red-900/40 transition active:scale-95 flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-950/60 transition active:scale-95 flex items-center gap-2"
                 >
                   {formLoading && <RefreshCw className="w-4 h-4 animate-spin" />}
                   <span>{movieForm.id ? 'Save Changes' : 'Add to Vault'}</span>

@@ -69,15 +69,15 @@ function createPNG(width, height, r, g, b, a = 255) {
       const isMidBar = inBox && (y >= height * 0.48 && y <= height * 0.58 && x <= width * 0.65);
 
       if (isStem || isTopBar || isMidBar) {
-        // Netflix red #E50914
-        pr = 229;
-        pg = 9;
-        pb = 20;
+        // Electric Blue #2563EB
+        pr = 37;
+        pg = 99;
+        pb = 235;
       } else if (dist <= radius * 1.05) {
         // Inner subtle charcoal fill
-        pr = 28;
-        pg = 28;
-        pb = 28;
+        pr = 17;
+        pg = 24;
+        pb = 39;
       }
 
       rawData[pixelOffset] = pr;

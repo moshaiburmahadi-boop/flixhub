@@ -17,7 +17,7 @@ import { MovieGrid } from './components/MovieGrid';
 import { BottomNavigation } from './components/BottomNavigation';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { AdminPanel } from './components/AdminPanel';
-import { Film, Sparkles, Layers, PlusCircle, Search } from 'lucide-react';
+import { Film, Layers, Search } from 'lucide-react';
 
 export default function App() {
   // Navigation & Routing state
@@ -34,7 +34,7 @@ export default function App() {
   const [sortBy, setSortBy] = useState<SortOption>('personalRating');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Selected Movie for Netflix Modal
+  // Selected Movie for Modal
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   // Clean data states directly from Firestore
@@ -175,11 +175,11 @@ export default function App() {
   const activeCategoryObj = categories.find((c) => c.name === selectedCategoryFilter);
 
   return (
-    <div className="min-h-screen bg-[#141414] text-neutral-100 pb-24 md:pb-12 selection:bg-[#E50914] selection:text-white max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-[#0b0f17] text-slate-100 pb-24 md:pb-12 selection:bg-blue-600 selection:text-white max-w-full overflow-x-hidden">
       {/* Offline Status Bar */}
       <OfflineIndicator />
 
-      {/* Public Netflix Navbar (Strictly NO Admin or Account Options!) */}
+      {/* Public Navbar (Strictly NO Admin or Account Options!) */}
       <Navbar
         currentTab={currentTab}
         onTabChange={(tab) => {
@@ -193,24 +193,24 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="w-full max-w-full overflow-x-hidden">
-        {/* VIEW 1: HOME (Classic Netflix Experience) */}
+        {/* VIEW 1: HOME */}
         {currentTab === 'home' && !searchQuery && (
           <div className="space-y-4 w-full">
             {/* If movies exist, show Spotlight Hero Banner */}
             {movies.length > 0 ? (
               <HeroBanner movies={movies} onSelectMovie={setSelectedMovie} />
             ) : (
-              /* Clean Empty Vault Hero State when clean */
-              <div className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-8 text-center bg-gradient-to-b from-neutral-900 via-[#141414] to-[#141414] border-b border-neutral-800/80">
+              /* Clean Empty Vault Hero State */
+              <div className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-8 text-center bg-gradient-to-b from-slate-900 via-[#0b0f17] to-[#0b0f17] border-b border-slate-800/80">
                 <div className="max-w-2xl mx-auto space-y-4">
-                  <div className="w-16 h-16 rounded-2xl bg-[#E50914] flex items-center justify-center mx-auto shadow-2xl shadow-red-950/80">
+                  <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto shadow-2xl shadow-blue-900/50">
                     <Film className="w-8 h-8 text-white" />
                   </div>
                   <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
                     FLIXDAIRY VAULT
                   </h1>
-                  <p className="text-sm sm:text-base text-neutral-400 leading-relaxed">
-                    Your personal Netflix-style movie vault is clean and ready. Open <span className="text-[#E50914] font-mono font-bold">/admin</span> in the URL to add your mother categories, log watched movies, write your reviews, and set ratings.
+                  <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
+                    Your personal movie vault is clean and ready. Open <span className="text-blue-400 font-mono font-bold">/admin</span> in the URL to add your mother categories, log watched movies, write your reviews, and set ratings.
                   </p>
                 </div>
               </div>
@@ -220,8 +220,8 @@ export default function App() {
             {categories.length > 0 && (
               <div className="px-4 sm:px-8 pt-2">
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
-                  <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5 text-[#E50914]" />
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-blue-500" />
                     Genres:
                   </span>
                   {categories.map((cat) => (
@@ -232,7 +232,7 @@ export default function App() {
                         setSelectedSubCategoryFilter('All');
                         setCurrentTab('categories');
                       }}
-                      className="px-3 py-1 rounded-full text-xs font-semibold bg-neutral-900 hover:bg-[#E50914] text-neutral-300 hover:text-white border border-neutral-800 transition shrink-0"
+                      className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 hover:bg-blue-600 text-slate-300 hover:text-white border border-slate-800 transition shrink-0"
                     >
                       {cat.name}
                     </button>
@@ -298,8 +298,8 @@ export default function App() {
                   }}
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition shrink-0 ${
                     selectedCategoryFilter === 'All'
-                      ? 'bg-[#E50914] text-white shadow-lg'
-                      : 'bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-800'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-950/60'
+                      : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                   }`}
                 >
                   All Genres ({movies.length})
@@ -315,8 +315,8 @@ export default function App() {
                       }}
                       className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition shrink-0 ${
                         selectedCategoryFilter === cat.name
-                          ? 'bg-[#E50914] text-white shadow-lg'
-                          : 'bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-800'
+                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-950/60'
+                          : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                       }`}
                     >
                       {cat.name} ({count})
@@ -325,18 +325,18 @@ export default function App() {
                 })}
               </div>
 
-              {/* Sub-Category Chips (if a specific category is selected) */}
+              {/* Sub-Category Chips */}
               {activeCategoryObj && activeCategoryObj.subCategories?.length > 0 && (
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1 pb-3">
-                  <span className="text-xs text-neutral-500 font-semibold uppercase tracking-wider shrink-0 mr-1">
+                  <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider shrink-0 mr-1">
                     Sub-category:
                   </span>
                   <button
                     onClick={() => setSelectedSubCategoryFilter('All')}
                     className={`px-3 py-1 rounded-full text-xs font-semibold transition shrink-0 ${
                       selectedSubCategoryFilter === 'All'
-                        ? 'bg-neutral-200 text-black'
-                        : 'bg-neutral-900/90 text-neutral-400 hover:text-white border border-neutral-800'
+                        ? 'bg-slate-200 text-black'
+                        : 'bg-slate-900/90 text-slate-400 hover:text-white border border-slate-800'
                     }`}
                   >
                     All {selectedCategoryFilter}
@@ -347,8 +347,8 @@ export default function App() {
                       onClick={() => setSelectedSubCategoryFilter(sub)}
                       className={`px-3 py-1 rounded-full text-xs font-semibold transition shrink-0 ${
                         selectedSubCategoryFilter.toLowerCase() === sub.toLowerCase()
-                          ? 'bg-neutral-200 text-black'
-                          : 'bg-neutral-900/90 text-neutral-400 hover:text-white border border-neutral-800'
+                          ? 'bg-blue-600 text-white shadow shadow-blue-950/60'
+                          : 'bg-slate-900/90 text-slate-400 hover:text-white border border-slate-800'
                       }`}
                     >
                       {sub}
@@ -415,14 +415,14 @@ export default function App() {
           <div className="pt-20 sm:pt-28 w-full max-w-7xl mx-auto px-4 sm:px-8">
             {/* Search Input Box on Search Page */}
             <div className="mb-6">
-              <div className="relative flex items-center max-w-md w-full bg-neutral-900 border border-neutral-700 rounded-2xl px-4 py-2.5 focus-within:border-[#E50914] shadow-xl">
-                <Search className="w-5 h-5 text-neutral-400 shrink-0" />
+              <div className="relative flex items-center max-w-md w-full bg-slate-900 border border-slate-700 rounded-2xl px-4 py-2.5 focus-within:border-blue-500 shadow-xl">
+                <Search className="w-5 h-5 text-slate-400 shrink-0" />
                 <input
                   type="text"
                   placeholder="Search titles, genres, review notes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent text-sm text-white placeholder-neutral-500 focus:outline-none ml-2.5 w-full"
+                  className="bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none ml-2.5 w-full"
                   autoFocus
                 />
               </div>
@@ -441,7 +441,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Netflix Movie Popup Window on Card Click */}
+      {/* Movie Popup Window on Card Click */}
       <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
 
       {/* Mobile-Only Bottom Navigation (Strictly NO account option!) */}
@@ -454,15 +454,15 @@ export default function App() {
         onSurprisePick={handleSurprisePick}
       />
 
-      {/* Netflix-style Footer */}
-      <footer className="mt-20 border-t border-neutral-900 py-10 px-4 sm:px-8 text-neutral-500 text-xs max-w-7xl mx-auto space-y-4">
+      {/* Footer */}
+      <footer className="mt-20 border-t border-slate-900 py-10 px-4 sm:px-8 text-slate-500 text-xs max-w-7xl mx-auto space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-[#E50914] flex items-center justify-center text-white font-bold text-[10px]">
+            <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-white font-bold text-[10px]">
               FD
             </div>
-            <span className="font-bebas text-lg text-neutral-400 tracking-wider">FLIXDAIRY</span>
-            <span className="text-neutral-600">• Personal Curated Movie Vault</span>
+            <span className="font-bebas text-lg text-slate-400 tracking-wider">FLIXDAIRY</span>
+            <span className="text-slate-600">• Personal Curated Movie Vault</span>
           </div>
           <div>
             <span>{movies.length} movies cataloged across {categories.length} genres</span>
