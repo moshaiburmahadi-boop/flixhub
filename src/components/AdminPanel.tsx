@@ -20,6 +20,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Movie, Category } from '../types';
+import { FlixDairyLogo } from './FlixDairyLogo';
 import {
   saveMovie,
   removeMovie,
@@ -338,11 +339,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
           {/* Logo & Header */}
           <div className="text-center space-y-2">
-            <img
-              src="/logo.svg"
-              alt="FlixDairy"
-              className="h-14 sm:h-16 w-auto mx-auto object-contain rounded-xl drop-shadow-xl"
-            />
+            <FlixDairyLogo className="h-12 sm:h-14 w-auto mx-auto" />
             <h1 className="text-xl font-black text-white tracking-tight">Vault Management Console</h1>
             <p className="text-xs text-slate-400">
               Restricted management console for your personal movie vault.
@@ -465,13 +462,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       <header className="sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-4 sm:px-8 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
-            <img
-              src="/logo.svg"
-              alt="FlixDairy"
-              className="h-8 w-auto rounded object-contain"
-            />
-            <div>
-              <h1 className="font-bold text-white text-base leading-tight flex items-center gap-2">
+            <FlixDairyLogo className="h-7 w-auto" />
+            <div className="border-l border-slate-700 pl-3">
+              <h1 className="font-bold text-white text-sm leading-tight flex items-center gap-2">
                 <span>Vault Admin</span>
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                   LIVE

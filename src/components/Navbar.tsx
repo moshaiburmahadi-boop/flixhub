@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Film, Search, X, Sparkles } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
+import { FlixDairyLogo } from './FlixDairyLogo';
 
 interface NavbarProps {
   currentTab: 'home' | 'categories' | 'topRated' | 'all' | 'search';
@@ -76,7 +77,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center justify-between gap-2 sm:gap-4 w-full">
             {/* Brand & Desktop Navigation */}
             <div className="flex items-center gap-4 sm:gap-8 min-w-0">
-              {/* Site Logo using exact uploaded image */}
+              {/* Site Logo using exact vector logo */}
               <button
                 onClick={() => {
                   onTabChange('home');
@@ -85,11 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center gap-2 group text-left cursor-pointer focus:outline-none shrink-0"
                 title="FlixDairy Home"
               >
-                <img
-                  src="/logo.svg"
-                  alt="FlixDairy"
-                  className="h-8 sm:h-10 w-auto object-contain rounded-md transition-transform duration-300 group-hover:scale-105"
-                />
+                <FlixDairyLogo className="h-7 sm:h-9 w-auto transition-transform duration-300 group-hover:scale-105" />
               </button>
 
               {/* Desktop Navigation Links */}

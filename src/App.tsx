@@ -17,6 +17,7 @@ import { MovieGrid } from './components/MovieGrid';
 import { BottomNavigation } from './components/BottomNavigation';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { AdminPanel } from './components/AdminPanel';
+import { FlixDairyLogo } from './components/FlixDairyLogo';
 import { Film, Layers } from 'lucide-react';
 
 export default function App() {
@@ -203,11 +204,7 @@ export default function App() {
               /* Clean Empty Vault Hero State with Brand Logo */
               <div className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-8 text-center bg-gradient-to-b from-slate-900 via-[#0b0f17] to-[#0b0f17] border-b border-slate-800/80">
                 <div className="max-w-2xl mx-auto space-y-4">
-                  <img
-                    src="/logo.svg"
-                    alt="FlixDairy"
-                    className="w-44 sm:w-60 h-auto mx-auto rounded-2xl shadow-2xl drop-shadow-2xl"
-                  />
+                  <FlixDairyLogo className="h-16 sm:h-24 w-auto mx-auto" />
                   <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
                     YOUR PERSONAL MOVIE VAULT
                   </h1>
@@ -445,7 +442,7 @@ export default function App() {
       <footer className="mt-20 border-t border-slate-900 py-10 px-4 sm:px-8 text-slate-500 text-xs max-w-7xl mx-auto space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="/logo.svg" alt="FlixDairy" className="h-8 w-auto rounded object-contain" />
+            <FlixDairyLogo className="h-6 sm:h-7 w-auto" />
             <span className="text-slate-500">• Personal Curated Movie Vault</span>
           </div>
           <div>
