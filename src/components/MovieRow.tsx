@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, PlusCircle, Film } from 'lucide-react';
 import { Movie } from '../types';
 import { MovieCard } from './MovieCard';
 
@@ -9,6 +9,7 @@ interface MovieRowProps {
   subCategories?: string[];
   onSelectMovie: (movie: Movie) => void;
   badge?: string;
+  showWhenEmpty?: boolean;
 }
 
 export const MovieRow: React.FC<MovieRowProps> = ({
@@ -17,6 +18,7 @@ export const MovieRow: React.FC<MovieRowProps> = ({
   subCategories = [],
   onSelectMovie,
   badge,
+  showWhenEmpty = true,
 }) => {
   const [selectedSub, setSelectedSub] = useState<string>('All');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -26,7 +28,8 @@ export const MovieRow: React.FC<MovieRowProps> = ({
       ? movies
       : movies.filter((m) => m.subCategory?.toLowerCase() === selectedSub.toLowerCase());
 
-  if (movies.length === 0) return null;
+  // Only hide if showWhenEmpty is explicitly false and no movies
+  if (!showWhenEmpty && movies.length === 0) return null;
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -53,7 +56,7 @@ export const MovieRow: React.FC<MovieRowProps> = ({
             )}
           </h2>
           <span className="text-xs font-semibold text-neutral-500">
-            ({filteredMovies.length})
+            ({filteredMovies.length} {filteredMovies.length === 1 ? 'title' : 'titles'})
           </span>
         </div>
 
@@ -89,33 +92,50 @@ export const MovieRow: React.FC<MovieRowProps> = ({
 
       {/* Row Carousel Area */}
       <div className="relative">
-        {/* Left Scroll Button */}
-        <button
-          onClick={() => scroll('left')}
-          className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition opacity-0 group-hover/row:opacity-100 shadow-xl border border-neutral-700/80 backdrop-blur"
-          aria-label="Scroll left"
-        >
-          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-        </button>
+        {filteredMovies.length > 0 ? (
+          <>
+            {/* Left Scroll Button */}
+            <button
+              onClick={() => scroll('left')}
+              className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition opacity-0 group-hover/row:opacity-100 shadow-xl border border-neutral-700/80 backdrop-blur"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
 
-        {/* Horizontal Cards Scroller with uniform card heights and widths */}
-        <div
-          ref={scrollContainerRef}
-          className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar px-4 sm:px-8 py-2 scroll-smooth"
-        >
-          {filteredMovies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} onSelect={onSelectMovie} />
-          ))}
-        </div>
+            {/* Horizontal Cards Scroller with uniform card heights and widths */}
+            <div
+              ref={scrollContainerRef}
+              className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar px-4 sm:px-8 py-2 scroll-smooth"
+            >
+              {filteredMovies.map((movie) => (
+                <MovieCard key={movie.id} movie={movie} onSelect={onSelectMovie} />
+              ))}
+            </div>
 
-        {/* Right Scroll Button */}
-        <button
-          onClick={() => scroll('right')}
-          className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition opacity-0 group-hover/row:opacity-100 shadow-xl border border-neutral-700/80 backdrop-blur"
-          aria-label="Scroll right"
-        >
-          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-        </button>
+            {/* Right Scroll Button */}
+            <button
+              onClick={() => scroll('right')}
+              className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/80 text-white hover:bg-[#E50914] transition opacity-0 group-hover/row:opacity-100 shadow-xl border border-neutral-700/80 backdrop-blur"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+          </>
+        ) : (
+          /* Empty Mother Category State (Always visible on Home!) */
+          <div className="px-4 sm:px-8 py-2">
+            <div className="w-full sm:w-80 h-36 rounded-xl border border-dashed border-neutral-800 bg-neutral-900/40 flex flex-col items-center justify-center p-4 text-center space-y-1.5 transition hover:border-neutral-700">
+              <Film className="w-6 h-6 text-neutral-600" />
+              <p className="text-xs font-semibold text-neutral-400">
+                Category created: <span className="text-white">{title}</span>
+              </p>
+              <p className="text-[11px] text-neutral-500">
+                Log movies under this genre in <span className="text-[#E50914] font-mono">/admin</span>
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

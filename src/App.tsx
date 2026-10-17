@@ -8,9 +8,7 @@ import { Movie, Category, SortOption } from './types';
 import {
   subscribeToMovies,
   subscribeToCategories,
-  seedInitialVault,
 } from './services/movieService';
-import { INITIAL_CATEGORIES, INITIAL_MOVIES } from './data/initialMovies';
 import { Navbar } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { MovieRow } from './components/MovieRow';
@@ -19,7 +17,7 @@ import { MovieGrid } from './components/MovieGrid';
 import { BottomNavigation } from './components/BottomNavigation';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { AdminPanel } from './components/AdminPanel';
-import { Film, Sparkles, Filter, Layers } from 'lucide-react';
+import { Film, Sparkles, Layers, PlusCircle, Search } from 'lucide-react';
 
 export default function App() {
   // Navigation & Routing state
@@ -39,7 +37,7 @@ export default function App() {
   // Selected Movie for Netflix Modal
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  // Data states
+  // Clean data states directly from Firestore
   const [movies, setMovies] = useState<Movie[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -62,49 +60,22 @@ export default function App() {
     };
   }, []);
 
-  // Fetch Firestore data in real-time
+  // Fetch real-time Firestore data
   useEffect(() => {
     let moviesUnsub: (() => void) | undefined;
     let categoriesUnsub: (() => void) | undefined;
 
     try {
       moviesUnsub = subscribeToMovies((liveMovies) => {
-        if (liveMovies.length > 0) {
-          setMovies(liveMovies);
-        } else {
-          // If Firestore is empty, populate with curated starter items for display
-          const formattedInitial: Movie[] = INITIAL_MOVIES.map((m, idx) => ({
-            ...m,
-            id: `init_${idx + 1}`,
-          }));
-          setMovies(formattedInitial);
-        }
+        setMovies(liveMovies);
         setLoading(false);
       });
 
       categoriesUnsub = subscribeToCategories((liveCategories) => {
-        if (liveCategories.length > 0) {
-          setCategories(liveCategories);
-        } else {
-          const formattedCats: Category[] = INITIAL_CATEGORIES.map((c, idx) => ({
-            ...c,
-            id: `cat_${idx + 1}`,
-          }));
-          setCategories(formattedCats);
-        }
+        setCategories(liveCategories);
       });
     } catch (e) {
-      console.warn('Using local curated fallback due to offline/initial state');
-      const formattedInitial: Movie[] = INITIAL_MOVIES.map((m, idx) => ({
-        ...m,
-        id: `init_${idx + 1}`,
-      }));
-      setMovies(formattedInitial);
-      const formattedCats: Category[] = INITIAL_CATEGORIES.map((c, idx) => ({
-        ...c,
-        id: `cat_${idx + 1}`,
-      }));
-      setCategories(formattedCats);
+      console.warn('Firestore initial connection note:', e);
       setLoading(false);
     }
 
@@ -204,7 +175,7 @@ export default function App() {
   const activeCategoryObj = categories.find((c) => c.name === selectedCategoryFilter);
 
   return (
-    <div className="min-h-screen bg-[#141414] text-neutral-100 pb-24 md:pb-12 selection:bg-[#E50914] selection:text-white">
+    <div className="min-h-screen bg-[#141414] text-neutral-100 pb-24 md:pb-12 selection:bg-[#E50914] selection:text-white max-w-full overflow-x-hidden">
       {/* Offline Status Bar */}
       <OfflineIndicator />
 
@@ -221,29 +192,71 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main>
+      <main className="w-full max-w-full overflow-x-hidden">
         {/* VIEW 1: HOME (Classic Netflix Experience) */}
         {currentTab === 'home' && !searchQuery && (
-          <div className="space-y-4">
-            {/* Spotlight Hero Banner */}
-            <HeroBanner movies={movies} onSelectMovie={setSelectedMovie} />
+          <div className="space-y-4 w-full">
+            {/* If movies exist, show Spotlight Hero Banner */}
+            {movies.length > 0 ? (
+              <HeroBanner movies={movies} onSelectMovie={setSelectedMovie} />
+            ) : (
+              /* Clean Empty Vault Hero State when clean */
+              <div className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-8 text-center bg-gradient-to-b from-neutral-900 via-[#141414] to-[#141414] border-b border-neutral-800/80">
+                <div className="max-w-2xl mx-auto space-y-4">
+                  <div className="w-16 h-16 rounded-2xl bg-[#E50914] flex items-center justify-center mx-auto shadow-2xl shadow-red-950/80">
+                    <Film className="w-8 h-8 text-white" />
+                  </div>
+                  <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+                    FLIXDAIRY VAULT
+                  </h1>
+                  <p className="text-sm sm:text-base text-neutral-400 leading-relaxed">
+                    Your personal Netflix-style movie vault is clean and ready. Open <span className="text-[#E50914] font-mono font-bold">/admin</span> in the URL to add your mother categories, log watched movies, write your reviews, and set ratings.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Mother Categories Quick-Browse Bar */}
+            {categories.length > 0 && (
+              <div className="px-4 sm:px-8 pt-2">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+                  <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-[#E50914]" />
+                    Genres:
+                  </span>
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        setSelectedCategoryFilter(cat.name);
+                        setSelectedSubCategoryFilter('All');
+                        setCurrentTab('categories');
+                      }}
+                      className="px-3 py-1 rounded-full text-xs font-semibold bg-neutral-900 hover:bg-[#E50914] text-neutral-300 hover:text-white border border-neutral-800 transition shrink-0"
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Negative margin overlay to pull rows up seamlessly against hero banner */}
-            <div className="-mt-16 sm:-mt-24 relative z-20 space-y-4 sm:space-y-6">
-              {/* Row 1: My Personal Masterpieces */}
+            <div className={`${movies.length > 0 ? '-mt-16 sm:-mt-24' : 'mt-4'} relative z-20 space-y-4 sm:space-y-6 w-full`}>
+              {/* Row 1: My Personal Masterpieces (only if movies exist) */}
               {topRatedMovies.length > 0 && (
                 <MovieRow
                   title="My 10/10 Masterpieces"
                   movies={topRatedMovies}
                   onSelectMovie={setSelectedMovie}
                   badge="Hall of Fame"
+                  showWhenEmpty={false}
                 />
               )}
 
-              {/* Dynamic Rows for each curated category */}
+              {/* Dynamic Rows for EVERY mother category added by the admin */}
               {categories.map((category) => {
                 const categoryMovies = movies.filter((m) => m.category === category.name);
-                if (categoryMovies.length === 0) return null;
                 return (
                   <MovieRow
                     key={category.id}
@@ -251,11 +264,12 @@ export default function App() {
                     movies={categoryMovies}
                     subCategories={category.subCategories || []}
                     onSelectMovie={setSelectedMovie}
+                    showWhenEmpty={true}
                   />
                 );
               })}
 
-              {/* Row: Recently Added / Watched */}
+              {/* Timeline Row (only if movies exist) */}
               {movies.length > 0 && (
                 <MovieRow
                   title="Recently Watched & Logged"
@@ -264,6 +278,7 @@ export default function App() {
                   )}
                   onSelectMovie={setSelectedMovie}
                   badge="Timeline"
+                  showWhenEmpty={false}
                 />
               )}
             </div>
@@ -272,7 +287,7 @@ export default function App() {
 
         {/* VIEW 2: CATEGORIES & GENRES */}
         {currentTab === 'categories' && !searchQuery && (
-          <div className="pt-24 sm:pt-28">
+          <div className="pt-20 sm:pt-28 w-full">
             <div className="max-w-7xl mx-auto px-4 sm:px-8 mb-4">
               {/* Category Filter Chips */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3">
@@ -356,13 +371,18 @@ export default function App() {
               sortBy={sortBy}
               onSortChange={setSortBy}
               onSelectMovie={setSelectedMovie}
+              emptyMessage={
+                categories.length === 0
+                  ? 'No categories created yet. Create mother categories and sub-categories in /admin.'
+                  : 'No movies logged in this genre yet. Add titles via /admin.'
+              }
             />
           </div>
         )}
 
         {/* VIEW 3: TOP RATED */}
         {currentTab === 'topRated' && !searchQuery && (
-          <div className="pt-24 sm:pt-28">
+          <div className="pt-20 sm:pt-28 w-full">
             <MovieGrid
               movies={displayedMovies}
               title="Top Rated Vault Picks"
@@ -370,13 +390,14 @@ export default function App() {
               sortBy={sortBy}
               onSortChange={setSortBy}
               onSelectMovie={setSelectedMovie}
+              emptyMessage="No top-rated movies logged yet. Rate your favorite movies 9.0+ in /admin."
             />
           </div>
         )}
 
         {/* VIEW 4: ALL MOVIES */}
         {currentTab === 'all' && !searchQuery && (
-          <div className="pt-24 sm:pt-28">
+          <div className="pt-20 sm:pt-28 w-full">
             <MovieGrid
               movies={displayedMovies}
               title="Full Vault Archive"
@@ -384,21 +405,37 @@ export default function App() {
               sortBy={sortBy}
               onSortChange={setSortBy}
               onSelectMovie={setSelectedMovie}
+              emptyMessage="Your vault is empty. Log your first watched film in /admin."
             />
           </div>
         )}
 
-        {/* VIEW 5: SEARCH RESULTS */}
-        {searchQuery && (
-          <div className="pt-24 sm:pt-28">
+        {/* VIEW 5: SEARCH RESULTS & MOBILE SEARCH */}
+        {(searchQuery || currentTab === 'search') && (
+          <div className="pt-20 sm:pt-28 w-full max-w-7xl mx-auto px-4 sm:px-8">
+            {/* Search Input Box on Search Page */}
+            <div className="mb-6">
+              <div className="relative flex items-center max-w-md w-full bg-neutral-900 border border-neutral-700 rounded-2xl px-4 py-2.5 focus-within:border-[#E50914] shadow-xl">
+                <Search className="w-5 h-5 text-neutral-400 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search titles, genres, review notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent text-sm text-white placeholder-neutral-500 focus:outline-none ml-2.5 w-full"
+                  autoFocus
+                />
+              </div>
+            </div>
+
             <MovieGrid
               movies={displayedMovies}
-              title={`Search Results for "${searchQuery}"`}
-              subtitle={`Found ${displayedMovies.length} matching titles in your vault.`}
+              title={searchQuery ? `Results for "${searchQuery}"` : 'Search Vault'}
+              subtitle={searchQuery ? `Found ${displayedMovies.length} matching titles.` : 'Type above to search through your movies.'}
               sortBy={sortBy}
               onSortChange={setSortBy}
               onSelectMovie={setSelectedMovie}
-              emptyMessage={`No movies in the vault matched "${searchQuery}".`}
+              emptyMessage={searchQuery ? `No movies in the vault matched "${searchQuery}".` : 'Type a title, genre, or keyword to start searching.'}
             />
           </div>
         )}
@@ -431,10 +468,6 @@ export default function App() {
             <span>{movies.length} movies cataloged across {categories.length} genres</span>
           </div>
         </div>
-        <p className="text-neutral-600">
-          FlixDairy is a personal Netflix-style film vault built with React, Vite PWA, and Firebase Firestore.
-          All external watch buttons open direct links provided in the vault.
-        </p>
       </footer>
     </div>
   );

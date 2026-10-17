@@ -242,8 +242,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       });
       setNewCategoryName('');
       showStatus(`Category "${newCategoryName}" created!`);
-    } catch (err) {
-      showStatus('Failed to create category.', 'error');
+    } catch (err: unknown) {
+      console.error('Category create error:', err);
+      showStatus(err instanceof Error ? err.message : 'Failed to create category.', 'error');
     }
   };
 
@@ -263,8 +264,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       });
       setNewSubCategoryInput((prev) => ({ ...prev, [category.id]: '' }));
       showStatus(`Added subcategory "${subName}".`);
-    } catch (err) {
-      showStatus('Failed to add subcategory.', 'error');
+    } catch (err: unknown) {
+      console.error('Subcategory add error:', err);
+      showStatus(err instanceof Error ? err.message : 'Failed to add subcategory.', 'error');
     }
   };
 
@@ -275,8 +277,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         subCategories: category.subCategories.filter((s) => s !== subName),
       });
       showStatus(`Removed subcategory "${subName}".`);
-    } catch (err) {
-      showStatus('Failed to remove subcategory.', 'error');
+    } catch (err: unknown) {
+      console.error('Subcategory remove error:', err);
+      showStatus(err instanceof Error ? err.message : 'Failed to remove subcategory.', 'error');
     }
   };
 
@@ -285,8 +288,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       try {
         await removeCategory(category.id);
         showStatus(`Category "${category.name}" removed.`);
-      } catch (err) {
-        showStatus('Failed to delete category.', 'error');
+      } catch (err: unknown) {
+        console.error('Category delete error:', err);
+        showStatus(err instanceof Error ? err.message : 'Failed to delete category.', 'error');
       }
     }
   };
