@@ -18,6 +18,8 @@ import {
   Tag,
   Download,
   AlertCircle,
+  Clock,
+  Tv,
 } from 'lucide-react';
 import { Movie, Category } from '../types';
 import { FlixDairyLogo } from './FlixDairyLogo';
@@ -72,6 +74,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     personalRating: 9.0,
     imdbRating: 8.5,
     duration: '2h 15m',
+    contentType: 'movie',
+    episodeName: '',
+    episodeInfo: '',
     releaseYear: new Date().getFullYear(),
     category: categories[0]?.name || 'Sci-Fi',
     subCategory: '',
@@ -178,6 +183,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       personalRating: 9.0,
       imdbRating: 8.5,
       duration: '2h 15m',
+      contentType: 'movie',
+      episodeName: '',
+      episodeInfo: '',
       releaseYear: new Date().getFullYear(),
       category: categories[0]?.name || '',
       subCategory: '',
@@ -191,7 +199,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   const openEditMovieForm = (movie: Movie) => {
-    setMovieForm({ ...movie });
+    const isSeries =
+      movie.contentType === 'series' ||
+      movie.category?.toLowerCase().includes('series') ||
+      movie.category?.toLowerCase().includes('drama') ||
+      movie.subCategory?.toLowerCase().includes('series') ||
+      !!movie.episodeName;
+
+    setMovieForm({
+      ...movie,
+      contentType: movie.contentType || (isSeries ? 'series' : 'movie'),
+      episodeName:
+        movie.episodeName ||
+        (isSeries && movie.duration && !movie.duration.includes('h') ? movie.duration : ''),
+      episodeInfo: movie.episodeInfo || '',
+    });
     setIsEditingMovie(true);
   };
 
@@ -204,16 +226,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
     setFormLoading(true);
     try {
+      const isSeries = movieForm.contentType === 'series';
+      const cleanEpisodeName = movieForm.episodeName?.trim() || '';
+      const cleanEpisodeInfo = movieForm.episodeInfo?.trim() || '';
+
       const sanitizedMovie = {
         ...movieForm,
         title: movieForm.title.trim(),
         posterUrl: movieForm.posterUrl.trim(),
         watchUrl: movieForm.watchUrl?.trim() || '#',
-        duration: movieForm.duration?.trim() || '2h',
+        contentType: isSeries ? 'series' : 'movie',
+        episodeName: isSeries ? cleanEpisodeName : '',
+        episodeInfo: isSeries ? (cleanEpisodeInfo || (cleanEpisodeName ? '' : 'Series')) : '',
+        duration: isSeries
+          ? (cleanEpisodeName || cleanEpisodeInfo || 'Series')
+          : (movieForm.duration?.trim() || '2h 15m'),
         category: movieForm.category?.trim() || categories[0]?.name || 'General',
       };
       await saveMovie(sanitizedMovie as Omit<Movie, 'id'> & { id?: string });
-      showStatus(`Movie "${movieForm.title}" saved successfully!`);
+      showStatus(`${isSeries ? 'Series' : 'Movie'} "${movieForm.title}" saved successfully!`);
       setIsEditingMovie(false);
     } catch (err: unknown) {
       console.error('Save error:', err);
@@ -651,8 +682,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               </span>
                             )}
                           </div>
-                          <div className="text-slate-400 text-xs">
-                            {movie.releaseYear} • {movie.duration}
+                          <div className="text-slate-400 text-xs flex items-center gap-1.5 mt-0.5">
+                            <span>{movie.releaseYear}</span>
+                            <span>•</span>
+                            <span className="text-blue-400 font-medium">
+                              {movie.contentType === 'series'
+                                ? (movie.episodeName || movie.episodeInfo || 'Series')
+                                : movie.duration}
+                            </span>
+                            {movie.contentType === 'series' && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-950 text-blue-300 border border-blue-800 font-semibold">
+                                Series
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="py-2.5 px-4">
@@ -951,7 +993,61 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               )}
 
-              {/* Ratings and Duration */}
+              {/* Content Type: Movie vs Series */}
+              <div className="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-slate-300">Content Format:</span>
+                  <div className="flex items-center gap-1.5 p-1 rounded-lg bg-slate-900 border border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMovieForm({
+                          ...movieForm,
+                          contentType: 'movie',
+                          duration:
+                            movieForm.duration && !movieForm.duration.toLowerCase().includes('episode')
+                              ? movieForm.duration
+                              : '2h 15m',
+                        })
+                      }
+                      className={`px-3 py-1 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
+                        movieForm.contentType !== 'series'
+                          ? 'bg-blue-600 text-white shadow shadow-blue-950/60'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <Film className="w-3.5 h-3.5" />
+                      <span>🎬 Film / Movie</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMovieForm({
+                          ...movieForm,
+                          contentType: 'series',
+                          episodeName: movieForm.episodeName || 'Episode 1',
+                          duration: movieForm.episodeName || 'Episode 1',
+                        })
+                      }
+                      className={`px-3 py-1 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
+                        movieForm.contentType === 'series'
+                          ? 'bg-blue-600 text-white shadow shadow-blue-950/60'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <Tv className="w-3.5 h-3.5" />
+                      <span>📺 TV Series / Drama / Anime</span>
+                    </button>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  {movieForm.contentType === 'series'
+                    ? '💡 For TV Series & Dramas: Watch duration is replaced with Episode Name so viewers know which episode this link is for.'
+                    : '💡 For Feature Films: Enter the film runtime (watch duration like 2h 15m).'}
+                </p>
+              </div>
+
+              {/* Ratings and Runtime / Episode Name */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
@@ -987,19 +1083,111 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Duration (e.g. 2h 49m)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="2h 28m (optional)"
-                    value={movieForm.duration || ''}
-                    onChange={(e) => setMovieForm({ ...movieForm, duration: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
+                {/* THE 3RD FIELD: Episode Name for Series, Watch Duration for Movies */}
+                {movieForm.contentType === 'series' ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-bold text-blue-400 flex items-center gap-1 truncate">
+                        <Tv className="w-3.5 h-3.5 shrink-0" />
+                        <span>Episode Name *</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMovieForm({
+                            ...movieForm,
+                            contentType: 'movie',
+                            duration: '2h 15m',
+                          })
+                        }
+                        className="text-[10px] text-slate-400 hover:text-blue-300 underline shrink-0"
+                        title="Switch back to single film watch duration"
+                      >
+                        Single Movie?
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Episode 1, Ep 16: Finale, or S01E01"
+                      value={movieForm.episodeName || ''}
+                      onChange={(e) =>
+                        setMovieForm({
+                          ...movieForm,
+                          episodeName: e.target.value,
+                          duration: e.target.value,
+                        })
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-blue-500 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm shadow-blue-950/50"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-semibold text-slate-300 flex items-center gap-1 truncate">
+                        <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span>Watch Duration *</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMovieForm({
+                            ...movieForm,
+                            contentType: 'series',
+                            episodeName: movieForm.episodeName || 'Episode 1',
+                            duration: movieForm.episodeName || 'Episode 1',
+                          })
+                        }
+                        className="text-[10px] text-blue-400 hover:text-blue-300 underline font-medium shrink-0"
+                        title="If this is a series or drama, switch to Episode Name"
+                      >
+                        Series? Episode Name
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="e.g. 2h 28m or 135m"
+                      value={movieForm.duration || ''}
+                      onChange={(e) => setMovieForm({ ...movieForm, duration: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                )}
               </div>
+
+              {/* Extra Series Information (Season, Total Episodes & Badge Preview) */}
+              {movieForm.contentType === 'series' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-blue-950/20 border border-blue-900/40">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Season or Total Episodes (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Season 1, 16 Episodes, or Complete Series"
+                      value={movieForm.episodeInfo || ''}
+                      onChange={(e) => setMovieForm({ ...movieForm, episodeInfo: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">
+                      Card Badge Preview
+                    </label>
+                    <div className="flex flex-wrap items-center gap-2 py-1.5">
+                      <span className="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold flex items-center gap-1 shadow">
+                        <Tv className="w-3.5 h-3.5" />
+                        <span>{movieForm.episodeName || 'Episode 1'}</span>
+                      </span>
+                      {movieForm.episodeInfo && (
+                        <span className="text-xs text-blue-300 bg-blue-950 px-2 py-0.5 rounded border border-blue-800">
+                          {movieForm.episodeInfo}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Category & Sub-Category */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -50,12 +50,19 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onSelect }) => {
           {movie.title}
         </h3>
 
-        <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-400">
+        <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-400 truncate">
           <span>{movie.releaseYear}</span>
           <span>•</span>
-          <span>{movie.duration}</span>
+          <span
+            className={`truncate max-w-[95px] ${movie.contentType === 'series' || movie.episodeName ? 'text-blue-400 font-semibold' : ''}`}
+            title={movie.contentType === 'series' ? (movie.episodeName || movie.episodeInfo || 'Series') : movie.duration}
+          >
+            {movie.contentType === 'series'
+              ? (movie.episodeName || movie.episodeInfo || 'Series')
+              : movie.duration}
+          </span>
           <span>•</span>
-          <span className="text-amber-400 font-semibold flex items-center gap-0.5">
+          <span className="text-amber-400 font-semibold flex items-center gap-0.5 shrink-0">
             IMDb {movie.imdbRating}
           </span>
         </div>

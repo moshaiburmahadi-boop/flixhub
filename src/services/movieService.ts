@@ -82,6 +82,8 @@ export async function saveMovie(movie: Omit<Movie, 'id'> & { id?: string }): Pro
     personalRating: typeof movie.personalRating === 'number' && !isNaN(movie.personalRating) ? movie.personalRating : 10,
     imdbRating: typeof movie.imdbRating === 'number' && !isNaN(movie.imdbRating) ? movie.imdbRating : 8.0,
     duration: (movie.duration || '2h').trim(),
+    contentType: movie.contentType || (movie.category?.toLowerCase().includes('series') || movie.subCategory?.toLowerCase().includes('series') ? 'series' : 'movie'),
+    episodeInfo: (movie.episodeInfo || '').trim(),
     releaseYear: Number(movie.releaseYear) || new Date().getFullYear(),
     category: (movie.category || 'General').trim(),
     subCategory: (movie.subCategory || '').trim(),

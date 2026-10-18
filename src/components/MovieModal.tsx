@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Play, ExternalLink, Star, Calendar, Clock, Film, MessageSquareQuote, Sparkles } from 'lucide-react';
+import { X, Play, ExternalLink, Star, Calendar, Clock, Film, MessageSquareQuote, Sparkles, Tv } from 'lucide-react';
 import { Movie } from '../types';
 
 interface MovieModalProps {
@@ -63,6 +63,11 @@ export const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
               <span className="px-2.5 py-1 rounded bg-blue-600 text-white text-xs font-bold uppercase tracking-wider shadow">
                 {movie.category}
               </span>
+              {movie.contentType === 'series' && (
+                <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-500/40 flex items-center gap-1">
+                  <Tv className="w-3 h-3" /> TV Series
+                </span>
+              )}
               {movie.subCategory && (
                 <span className="px-2.5 py-1 rounded bg-black/60 text-slate-300 text-xs font-medium border border-slate-700 backdrop-blur-md">
                   {movie.subCategory}
@@ -108,17 +113,37 @@ export const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
         <div className="p-6 sm:p-8 space-y-6">
           {/* Metadata Row & Dual Ratings */}
           <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
-            {/* Year & Duration */}
-            <div className="flex items-center gap-4 text-sm text-slate-300">
+            {/* Year & Duration & Episode Info */}
+            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-slate-400" />
                 <span>{movie.releaseYear}</span>
               </div>
-              <span>•</span>
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-slate-400" />
-                <span>{movie.duration}</span>
-              </div>
+              {movie.contentType === 'series' || movie.episodeName ? (
+                <>
+                  <span>•</span>
+                  <div className="flex items-center gap-1.5 text-blue-400 font-bold bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-800">
+                    <Tv className="w-4 h-4 text-blue-400" />
+                    <span>{movie.episodeName || movie.episodeInfo || 'Series'}</span>
+                  </div>
+                  {movie.episodeInfo && movie.episodeInfo !== movie.episodeName && (
+                    <>
+                      <span>•</span>
+                      <span className="text-slate-300 text-xs px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
+                        {movie.episodeInfo}
+                      </span>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span>•</span>
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-slate-400" />
+                    <span>{movie.duration}</span>
+                  </div>
+                </>
+              )}
               {movie.dateWatched && (
                 <>
                   <span className="hidden sm:inline">•</span>

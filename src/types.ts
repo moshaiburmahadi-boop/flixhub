@@ -5,7 +5,10 @@ export interface Movie {
   backdropUrl?: string;
   personalRating: number; // 0 to 10
   imdbRating: number;     // 0 to 10
-  duration: string;       // e.g. "2h 49m"
+  duration: string;       // e.g. "2h 49m" (for movies) or "45m / ep"
+  contentType?: 'movie' | 'series'; // 'movie' or 'series'
+  episodeName?: string;   // e.g. "Episode 1", "Ep 12: The Grand Finale", "S01E05"
+  episodeInfo?: string;   // e.g. "16 Episodes", "Season 1", "Episode Name"
   releaseYear: number;    // e.g. 2023
   category: string;       // e.g. "Sci-Fi", "Action", "Thriller"
   subCategory?: string;   // e.g. "Cyberpunk", "Christopher Nolan"

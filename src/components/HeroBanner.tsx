@@ -76,7 +76,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movies, onSelectMovie })
             </span>
             <span className="font-medium text-slate-300">{current.releaseYear}</span>
             <span>•</span>
-            <span className="font-medium text-slate-300">{current.duration}</span>
+            <span className="font-medium text-slate-300">
+              {current.contentType === 'series'
+                ? (current.episodeName || current.episodeInfo || 'Series')
+                : current.duration}
+            </span>
           </div>
 
           {/* Synopsis / Review Teaser */}
