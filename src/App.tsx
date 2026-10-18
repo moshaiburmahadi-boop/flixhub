@@ -255,7 +255,9 @@ export default function App() {
 
               {/* Dynamic Rows for EVERY mother category added by the admin */}
               {categories.map((category) => {
-                const categoryMovies = movies.filter((m) => m.category === category.name);
+                const categoryMovies = movies.filter(
+                  (m) => m.category?.trim().toLowerCase() === category.name?.trim().toLowerCase()
+                );
                 return (
                   <MovieRow
                     key={category.id}
@@ -267,6 +269,28 @@ export default function App() {
                   />
                 );
               })}
+
+              {/* Show any movies that do not match existing categories so nothing is hidden */}
+              {(() => {
+                const categorizedIds = new Set(
+                  categories.flatMap((cat) =>
+                    movies
+                      .filter((m) => m.category?.trim().toLowerCase() === cat.name?.trim().toLowerCase())
+                      .map((m) => m.id)
+                  )
+                );
+                const uncategorized = movies.filter((m) => !categorizedIds.has(m.id));
+                if (uncategorized.length === 0) return null;
+                return (
+                  <MovieRow
+                    title="All Vault Titles"
+                    movies={uncategorized}
+                    onSelectMovie={setSelectedMovie}
+                    badge="Vault"
+                    showWhenEmpty={false}
+                  />
+                );
+              })()}
 
               {/* Timeline Row (only if movies exist) */}
               {movies.length > 0 && (

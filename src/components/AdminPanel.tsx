@@ -197,14 +197,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   const handleSaveMovie = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!movieForm.title || !movieForm.posterUrl || !movieForm.watchUrl) {
-      showStatus('Title, Poster URL, and Watch URL are required.', 'error');
+    if (!movieForm.title?.trim() || !movieForm.posterUrl?.trim()) {
+      showStatus('Movie Title and Poster Image URL are required.', 'error');
       return;
     }
 
     setFormLoading(true);
     try {
-      await saveMovie(movieForm as Omit<Movie, 'id'> & { id?: string });
+      const sanitizedMovie = {
+        ...movieForm,
+        title: movieForm.title.trim(),
+        posterUrl: movieForm.posterUrl.trim(),
+        watchUrl: movieForm.watchUrl?.trim() || '#',
+        duration: movieForm.duration?.trim() || '2h',
+        category: movieForm.category?.trim() || categories[0]?.name || 'General',
+      };
+      await saveMovie(sanitizedMovie as Omit<Movie, 'id'> & { id?: string });
       showStatus(`Movie "${movieForm.title}" saved successfully!`);
       setIsEditingMovie(false);
     } catch (err: unknown) {
@@ -985,8 +993,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </label>
                   <input
                     type="text"
-                    required
-                    placeholder="2h 28m"
+                    placeholder="2h 28m (optional)"
                     value={movieForm.duration || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, duration: e.target.value })}
                     className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
@@ -998,7 +1005,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Mother Category / Genre *
+                    Mother Category / Genre
                   </label>
                   {categories.length > 0 ? (
                     <select
@@ -1024,8 +1031,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   ) : (
                     <input
                       type="text"
-                      required
-                      placeholder="e.g. Action, Sci-Fi"
+                      placeholder="e.g. Action, Korean, Drama"
                       value={movieForm.category || ''}
                       onChange={(e) => setMovieForm({ ...movieForm, category: e.target.value })}
                       className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
@@ -1035,11 +1041,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Sub-Category (e.g. Cyberpunk, Nolan)
+                    Sub-Category (e.g. Cyberpunk, Series)
                   </label>
                   <input
                     type="text"
-                    placeholder="Sub-category or tag"
+                    placeholder="Sub-category (optional)"
                     value={movieForm.subCategory || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, subCategory: e.target.value })}
                     className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
@@ -1050,13 +1056,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               {/* External Watch Link */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  External Watch / Stream Link (URL) *
+                  External Watch / Stream Link (optional)
                 </label>
                 <div className="relative flex items-center">
                   <input
-                    type="url"
-                    required
-                    placeholder="https://netflix.com/title/... or https://imdb.com/..."
+                    type="text"
+                    placeholder="https://... (optional)"
                     value={movieForm.watchUrl || ''}
                     onChange={(e) => setMovieForm({ ...movieForm, watchUrl: e.target.value })}
                     className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"

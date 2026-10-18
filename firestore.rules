@@ -11,34 +11,20 @@ service cloud.firestore {
       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
-    function incoming() {
-      return request.resource.data;
-    }
-
-    function isValidMovie(data) {
-      return data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
-             data.posterUrl is string && data.posterUrl.size() > 0 && data.posterUrl.size() <= 1000 &&
-             data.category is string && data.category.size() > 0 && data.category.size() <= 100 &&
-             data.personalRating is number && data.personalRating >= 0 && data.personalRating <= 10 &&
-             data.imdbRating is number && data.imdbRating >= 0 && data.imdbRating <= 10 &&
-             data.watchUrl is string && data.watchUrl.size() > 0 && data.watchUrl.size() <= 1000;
-    }
-
-    function isValidCategory(data) {
-      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
-             (!('subCategories' in data) || (data.subCategories is list && data.subCategories.size() <= 50));
-    }
-
-    // Public read and schema-validated admin writes for FlixDairy vault
+    // Public read and validated writes for FlixDairy vault
     match /movies/{movieId} {
       allow read: if true;
-      allow create, update: if isValidId(movieId) && isValidMovie(incoming());
+      allow create, update: if isValidId(movieId) && 
+                              request.resource.data.title is string && 
+                              request.resource.data.title.size() > 0;
       allow delete: if isValidId(movieId);
     }
 
     match /categories/{categoryId} {
       allow read: if true;
-      allow create, update: if isValidId(categoryId) && isValidCategory(incoming());
+      allow create, update: if isValidId(categoryId) && 
+                              request.resource.data.name is string && 
+                              request.resource.data.name.size() > 0;
       allow delete: if isValidId(categoryId);
     }
 
