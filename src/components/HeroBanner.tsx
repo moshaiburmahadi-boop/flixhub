@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, Info, Star, ChevronRight, ChevronLeft, Sparkles, ExternalLink } from 'lucide-react';
 import { Movie } from '../types';
 
@@ -8,30 +8,82 @@ interface HeroBannerProps {
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({ movies, onSelectMovie }) => {
-  const featuredMovies = movies.filter((m) => m.featured).length > 0
-    ? movies.filter((m) => m.featured)
-    : movies.slice(0, 4);
+  const featuredMovies =
+    movies.filter((m) => m.featured).length > 0
+      ? movies.filter((m) => m.featured)
+      : movies.slice(0, 5);
 
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Touch tracking for mobile swipe gestures
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  const nextFeatured = () => {
+    if (featuredMovies.length <= 1) return;
+    setCurrentIndex((prev) => (prev + 1) % featuredMovies.length);
+  };
+
+  const prevFeatured = () => {
+    if (featuredMovies.length <= 1) return;
+    setCurrentIndex((prev) => (prev - 1 + featuredMovies.length) % featuredMovies.length);
+  };
+
+  // Auto-slide every 3 seconds (resets timer when user manually swipes or changes index)
+  useEffect(() => {
+    if (featuredMovies.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % featuredMovies.length);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [featuredMovies.length, currentIndex]);
 
   if (featuredMovies.length === 0) return null;
 
   const current = featuredMovies[currentIndex % featuredMovies.length];
   const bannerImage = current.backdropUrl || current.posterUrl;
 
-  const nextFeatured = () => {
-    setCurrentIndex((prev) => (prev + 1) % featuredMovies.length);
+  // Touch handlers for finger swiping on mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = null;
   };
 
-  const prevFeatured = () => {
-    setCurrentIndex((prev) => (prev - 1 + featuredMovies.length) % featuredMovies.length);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const diff = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 45; // 45px threshold for deliberate swipe
+
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0) {
+        // Swiped Left -> Go to next slide
+        nextFeatured();
+      } else {
+        // Swiped Right -> Go to previous slide
+        prevFeatured();
+      }
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   return (
-    <div className="relative w-full h-[65vh] sm:h-[80vh] min-h-[480px] max-h-[750px] overflow-hidden bg-black select-none">
+    <div
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="relative w-full h-[65vh] sm:h-[80vh] min-h-[480px] max-h-[750px] overflow-hidden bg-black select-none touch-pan-y"
+    >
       {/* Background Image with Cinematic Gradients */}
       <div className="absolute inset-0">
         <img
+          key={current.id || currentIndex}
           src={bannerImage}
           alt={current.title}
           className="w-full h-full object-cover object-center filter brightness-[0.72] transition-all duration-700 scale-105"
@@ -78,7 +130,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movies, onSelectMovie })
             <span>•</span>
             <span className="font-medium text-slate-300">
               {current.contentType === 'series'
-                ? (current.episodeName || current.episodeInfo || 'Series')
+                ? current.episodeName || current.episodeInfo || 'Series'
                 : current.duration}
             </span>
           </div>
@@ -113,9 +165,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movies, onSelectMovie })
           </div>
         </div>
 
-        {/* Carousel Switchers (if multiple featured) */}
+        {/* Carousel Arrow Switchers - STRICTLY HIDDEN ON MOBILE, visible only on sm: screens and larger */}
         {featuredMovies.length > 1 && (
-          <div className="absolute right-4 sm:right-8 bottom-16 sm:bottom-20 flex items-center gap-2">
+          <div className="hidden sm:flex absolute right-4 sm:right-8 bottom-16 sm:bottom-20 items-center gap-2 z-20">
             <button
               onClick={prevFeatured}
               className="p-2 rounded-full bg-black/60 text-white hover:bg-blue-600 transition border border-slate-700/60"
@@ -133,6 +185,22 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movies, onSelectMovie })
             >
               <ChevronRight className="w-5 h-5" />
             </button>
+          </div>
+        )}
+
+        {/* Subtle Slide Indicator Dots for Mobile (Arrows are completely hidden on mobile) */}
+        {featuredMovies.length > 1 && (
+          <div className="sm:hidden absolute bottom-4 inset-x-0 flex items-center justify-center gap-1.5 z-20 pointer-events-none">
+            {featuredMovies.map((_, idx) => (
+              <span
+                key={idx}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  idx === currentIndex % featuredMovies.length
+                    ? 'w-5 bg-blue-500'
+                    : 'w-1.5 bg-white/40'
+                }`}
+              />
+            ))}
           </div>
         )}
       </div>

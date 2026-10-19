@@ -97,12 +97,6 @@ export default function App() {
     }
   };
 
-  // Surprise pick (random movie modal)
-  const handleSurprisePick = () => {
-    if (movies.length === 0) return;
-    const randomIndex = Math.floor(Math.random() * movies.length);
-    setSelectedMovie(movies[randomIndex]);
-  };
 
   // Filtered & Sorted movies
   const displayedMovies = useMemo(() => {
@@ -189,7 +183,6 @@ export default function App() {
         }}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        onSurprisePick={handleSurprisePick}
       />
 
       {/* Main Content Area */}
@@ -459,7 +452,6 @@ export default function App() {
           setCurrentTab(tab);
           if (tab !== 'search') setSearchQuery('');
         }}
-        onSurprisePick={handleSurprisePick}
       />
 
       {/* Footer */}

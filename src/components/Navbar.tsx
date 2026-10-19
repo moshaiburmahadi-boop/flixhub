@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Film, Search, X, Sparkles } from 'lucide-react';
+import { Film, Search, X } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
 import { FlixDairyLogo } from './FlixDairyLogo';
 
@@ -8,7 +8,7 @@ interface NavbarProps {
   onTabChange: (tab: 'home' | 'categories' | 'topRated' | 'all' | 'search') => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onSurprisePick: () => void;
+  onSurprisePick?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -130,14 +130,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   All Movies
-                </button>
-                <button
-                  onClick={onSurprisePick}
-                  className="flex items-center gap-1.5 text-slate-400 hover:text-blue-400 transition text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700"
-                  title="Pick a random film from your vault"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Surprise Me</span>
                 </button>
               </nav>
             </div>

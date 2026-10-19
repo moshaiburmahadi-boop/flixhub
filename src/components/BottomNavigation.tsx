@@ -1,23 +1,22 @@
 import React from 'react';
-import { Home, Search, Layers, Star, Sparkles } from 'lucide-react';
+import { Home, Search, Layers, Star } from 'lucide-react';
 
 interface BottomNavigationProps {
   currentTab: 'home' | 'categories' | 'topRated' | 'all' | 'search';
   onTabChange: (tab: 'home' | 'categories' | 'topRated' | 'all' | 'search') => void;
-  onSurprisePick: () => void;
+  onSurprisePick?: () => void;
 }
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   currentTab,
   onTabChange,
-  onSurprisePick,
 }) => {
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[#0b0f17]/95 backdrop-blur-lg border-t border-slate-800/80 px-2 py-1.5 flex items-center justify-around safe-area-bottom select-none">
-      {/* Home */}
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[#0b0f17]/95 backdrop-blur-lg border-t border-slate-800/80 px-2 py-1.5 grid grid-cols-4 safe-area-bottom select-none shadow-2xl">
+      {/* Tab 1: Home */}
       <button
         onClick={() => onTabChange('home')}
-        className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg transition ${
+        className={`flex flex-col items-center justify-center py-1 rounded-lg transition ${
           currentTab === 'home' ? 'text-blue-500 font-bold' : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -25,10 +24,10 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
         <span className="text-[10px] font-medium mt-0.5">Home</span>
       </button>
 
-      {/* Search */}
+      {/* Tab 2: Search */}
       <button
         onClick={() => onTabChange('search')}
-        className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg transition ${
+        className={`flex flex-col items-center justify-center py-1 rounded-lg transition ${
           currentTab === 'search' ? 'text-blue-500 font-bold' : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -36,10 +35,10 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
         <span className="text-[10px] font-medium mt-0.5">Search</span>
       </button>
 
-      {/* Categories */}
+      {/* Tab 3: Genres / Categories */}
       <button
         onClick={() => onTabChange('categories')}
-        className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg transition ${
+        className={`flex flex-col items-center justify-center py-1 rounded-lg transition ${
           currentTab === 'categories' ? 'text-blue-500 font-bold' : 'text-slate-400 hover:text-slate-200'
         }`}
       >
@@ -47,24 +46,15 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
         <span className="text-[10px] font-medium mt-0.5">Genres</span>
       </button>
 
-      {/* Top Rated */}
+      {/* Tab 4: Top Rated */}
       <button
         onClick={() => onTabChange('topRated')}
-        className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg transition ${
+        className={`flex flex-col items-center justify-center py-1 rounded-lg transition ${
           currentTab === 'topRated' ? 'text-blue-500 font-bold' : 'text-slate-400 hover:text-slate-200'
         }`}
       >
         <Star className="w-5 h-5" />
         <span className="text-[10px] font-medium mt-0.5">Top Rated</span>
-      </button>
-
-      {/* Surprise Me / Random Pick */}
-      <button
-        onClick={onSurprisePick}
-        className="flex flex-col items-center justify-center py-1 px-3 rounded-lg text-slate-400 hover:text-amber-400 transition"
-      >
-        <Sparkles className="w-5 h-5 text-amber-400" />
-        <span className="text-[10px] font-medium mt-0.5 text-slate-400">Random</span>
       </button>
     </div>
   );
