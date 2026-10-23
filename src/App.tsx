@@ -208,33 +208,33 @@ export default function App() {
               </div>
             )}
 
-            {/* Mother Categories Quick-Browse Bar */}
-            {categories.length > 0 && (
-              <div className="px-4 sm:px-8 pt-2">
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5 text-blue-500" />
-                    Genres:
-                  </span>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => {
-                        setSelectedCategoryFilter(cat.name);
-                        setSelectedSubCategoryFilter('All');
-                        setCurrentTab('categories');
-                      }}
-                      className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 hover:bg-blue-600 text-slate-300 hover:text-white border border-slate-800 transition shrink-0"
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
+            {/* Rows & Genres Section with clean vertical layout and zero collision */}
+            <div className="relative z-20 space-y-5 sm:space-y-8 w-full mt-2 sm:mt-4">
+              {/* Mother Categories Quick-Browse Bar */}
+              {categories.length > 0 && (
+                <div className="px-4 sm:px-8">
+                  <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2.5 px-3.5 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-800 shadow-md">
+                    <span className="text-xs font-bold text-blue-400 uppercase tracking-wider shrink-0 flex items-center gap-1.5 mr-1">
+                      <Layers className="w-4 h-4 text-blue-400" />
+                      Genres:
+                    </span>
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          setSelectedCategoryFilter(cat.name);
+                          setSelectedSubCategoryFilter('All');
+                          setCurrentTab('categories');
+                        }}
+                        className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-950/80 hover:bg-blue-600 text-slate-300 hover:text-white border border-slate-800 transition shrink-0 shadow-sm active:scale-95"
+                      >
+                        {cat.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Negative margin overlay to pull rows up seamlessly against hero banner */}
-            <div className={`${movies.length > 0 ? '-mt-16 sm:-mt-24' : 'mt-4'} relative z-20 space-y-4 sm:space-y-6 w-full`}>
               {/* Row 1: My Personal Masterpieces (only if movies exist) */}
               {topRatedMovies.length > 0 && (
                 <MovieRow

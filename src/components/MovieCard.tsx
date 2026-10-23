@@ -16,7 +16,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onSelect }) => {
   return (
     <div
       onClick={() => onSelect(movie)}
-      className="group relative flex-shrink-0 w-40 sm:w-52 h-64 sm:h-80 rounded-xl overflow-hidden cursor-pointer bg-slate-900 border border-slate-800/80 transition-all duration-300 hover:scale-105 hover:z-20 hover:shadow-2xl hover:shadow-blue-950/50 hover:border-blue-500/60 focus:outline-none select-none"
+      className="group relative flex-shrink-0 w-36 sm:w-52 h-56 sm:h-80 rounded-xl overflow-hidden cursor-pointer bg-slate-900 border border-slate-800/80 transition-all duration-300 hover:scale-105 hover:z-20 hover:shadow-2xl hover:shadow-blue-950/50 hover:border-blue-500/60 focus:outline-none select-none"
     >
       {/* Poster Image */}
       <img
@@ -33,7 +33,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onSelect }) => {
       {/* Top Badges */}
       <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between gap-1 pointer-events-none">
         {/* Category tag */}
-        <span className="px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider uppercase bg-black/75 text-slate-300 backdrop-blur-md border border-slate-700/60 truncate max-w-[90px]">
+        <span className="px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider uppercase bg-black/80 text-slate-300 backdrop-blur-md border border-slate-700/60 truncate max-w-[105px] sm:max-w-[130px]">
           {movie.subCategory || movie.category}
         </span>
 

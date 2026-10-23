@@ -43,19 +43,19 @@ export const MovieRow: React.FC<MovieRowProps> = ({
   };
 
   return (
-    <div className="py-4 sm:py-6 relative group/row">
+    <div className="py-2 sm:py-3 relative group/row">
       {/* Row Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 sm:px-8 mb-3">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 sm:px-8 mb-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <h2 className="text-base sm:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
             <span>{title}</span>
             {badge && (
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-600 text-white uppercase tracking-wider shadow">
+              <span className="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded bg-blue-600 text-white uppercase tracking-wider shadow-sm shrink-0">
                 {badge}
               </span>
             )}
           </h2>
-          <span className="text-xs font-semibold text-slate-500">
+          <span className="text-xs font-semibold text-slate-500 shrink-0">
             ({filteredMovies.length} {filteredMovies.length === 1 ? 'title' : 'titles'})
           </span>
         </div>
@@ -94,10 +94,10 @@ export const MovieRow: React.FC<MovieRowProps> = ({
       <div className="relative">
         {filteredMovies.length > 0 ? (
           <>
-            {/* Left Scroll Button */}
+            {/* Left Scroll Button - Hidden on mobile for clean touch swiping */}
             <button
               onClick={() => scroll('left')}
-              className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/80 text-white hover:bg-blue-600 transition opacity-0 group-hover/row:opacity-100 shadow-xl border border-slate-700/80 backdrop-blur"
+              className="hidden sm:block absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/80 text-white hover:bg-blue-600 transition opacity-0 group-hover/row:opacity-100 shadow-xl border border-slate-700/80 backdrop-blur"
               aria-label="Scroll left"
             >
               <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -113,26 +113,23 @@ export const MovieRow: React.FC<MovieRowProps> = ({
               ))}
             </div>
 
-            {/* Right Scroll Button */}
+            {/* Right Scroll Button - Hidden on mobile for clean touch swiping */}
             <button
               onClick={() => scroll('right')}
-              className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/80 text-white hover:bg-blue-600 transition opacity-0 group-hover/row:opacity-100 shadow-xl border border-slate-700/80 backdrop-blur"
+              className="hidden sm:block absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/80 text-white hover:bg-blue-600 transition opacity-0 group-hover/row:opacity-100 shadow-xl border border-slate-700/80 backdrop-blur"
               aria-label="Scroll right"
             >
               <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </>
         ) : (
-          /* Empty Mother Category State (Always visible on Home!) */
-          <div className="px-4 sm:px-8 py-2">
-            <div className="w-full sm:w-80 h-36 rounded-xl border border-dashed border-slate-800 bg-slate-900/50 flex flex-col items-center justify-center p-4 text-center space-y-1.5 transition hover:border-slate-700">
-              <Film className="w-6 h-6 text-slate-600" />
-              <p className="text-xs font-semibold text-slate-400">
-                Category created: <span className="text-white">{title}</span>
-              </p>
-              <p className="text-[11px] text-slate-500">
-                Log movies under this genre in <span className="text-blue-400 font-mono">/admin</span>
-              </p>
+          /* Empty Mother Category State (Compact & Clean) */
+          <div className="px-4 sm:px-8 py-1">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-dashed border-slate-800 bg-slate-900/40 text-slate-400 text-xs">
+              <Film className="w-4 h-4 text-blue-500/70 shrink-0" />
+              <span>
+                No titles logged in <strong className="text-slate-200">{title}</strong> yet. Add in <span className="text-blue-400 font-mono">/admin</span>
+              </span>
             </div>
           </div>
         )}
